@@ -291,39 +291,38 @@ export default function App() {
   };
 
   const handleDelete = async () => {
-    let isCar = selectedRows.length > 0 && !!selectedRows[0]?.model;
-    let isCard = selectedRows.length > 0 && !!selectedRows[0]?.cnp;
-    let isTransaction =
-      selectedRows.length > 0 && !!selectedRows[0]?.workmanship;
+    let isCar = window.location.pathname.includes("cars");
+    let isTransaction = window.location.pathname.includes("transactions");
+    let isCard = window.location.pathname.includes("cards");
 
-    if (selectedRows.length) {
-      selectedRows.forEach(async (row) => {
-        if (isCar) {
-          await fetch(
-            `https://django-car-service-api.herokuapp.com/car/delete/${row.id}`,
-            {
-              method: "DELETE",
-            }
-          );
-        } else if (isCard) {
-          await fetch(
-            `https://django-car-service-api.herokuapp.com/card/delete/${row.id}`,
-            {
-              method: "DELETE",
-            }
-          );
-        } else if (isTransaction) {
-          await fetch(
-            `https://django-car-service-api.herokuapp.com/transaction/delete/${row.id}`,
-            {
-              method: "DELETE",
-            }
-          );
-        }
-      });
-    }
+    selectedRows.forEach(async (row) => {
+      if (isCar) {
+        await fetch(
+          `https://django-car-service-api.herokuapp.com/car/delete/${row.id}/`,
+          {
+            method: "DELETE",
+          }
+        );
+      } else if (isCard) {
+        await fetch(
+          `https://django-car-service-api.herokuapp.com/card/delete/${row.id}/`,
+          {
+            method: "DELETE",
+          }
+        );
+      } else if (isTransaction) {
+        await fetch(
+          `https://django-car-service-api.herokuapp.com/transaction/delete/${row.id}/`,
+          {
+            method: "DELETE",
+          }
+        );
+      }
+    });
 
-    window.location.reload();
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
 
     // const response = await fetch(
     //   "https://django-car-service-api.herokuapp.com/card/delete"
