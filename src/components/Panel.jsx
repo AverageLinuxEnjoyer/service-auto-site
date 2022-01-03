@@ -15,10 +15,15 @@ function Panel({
   handleRenew,
   handleCreateRandom,
   handleBetweenSums,
+  handleCreate,
 }) {
   return (
     <Stack direction="row" spacing={2} className="PanelButtons">
-      <Button variant="contained" startIcon={<AddIcon />}>
+      <Button
+        onClick={handleCreate}
+        variant="contained"
+        startIcon={<AddIcon />}
+      >
         Create
       </Button>
       <Button variant="contained" startIcon={<EditIcon />}>
