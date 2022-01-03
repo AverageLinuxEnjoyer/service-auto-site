@@ -12,8 +12,7 @@ import MenuItem from "@mui/material/MenuItem";
 import SearchIcon from "@mui/icons-material/Search";
 import { styled, alpha } from "@mui/material/styles";
 import InputBase from "@mui/material/InputBase";
-import { Link } from 'react-router-dom';
-
+import { Link } from "react-router-dom";
 
 const pages = ["cars", "cards", "transactions"];
 
@@ -59,9 +58,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-
 class PageState {
-
   static handleCarsMenu = () => {
     fetch("http://localhost:8000/car/list").then(function (response) {
       const obj = response.json();
@@ -87,19 +84,11 @@ class PageState {
   ];
 }
 
-const ResponsiveAppBar = () => {
+const ResponsiveAppBar = ({ setSelectedRows, handleUndo, handleRedo }) => {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
-  };
-
-  const handleUndo = () => {
-    alert("ce vr ma tu");
-  };
-
-  const handleRedo = () => {
-    alert("ce vr ma tu");
   };
 
   return (
@@ -127,10 +116,16 @@ const ResponsiveAppBar = () => {
             {pages.map((page, i) => (
               <Button
                 key={page}
+                onClick={() => setSelectedRows([])}
                 // onClick={PageState.handleMenus[i]}
                 sx={{ my: 2, color: "white", display: "block" }}
               >
-                <Link style={{ color: 'white', textDecoration: 'none' }} to={page}>{page}</Link>
+                <Link
+                  style={{ color: "white", textDecoration: "none" }}
+                  to={page}
+                >
+                  {page}
+                </Link>
               </Button>
             ))}
           </Box>

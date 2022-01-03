@@ -2,16 +2,15 @@ import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
 
 function getWindowDimensions() {
-    const { innerWidth: width, innerHeight: height } = window;
+  const { innerWidth: width, innerHeight: height } = window;
 
-    //console.log(width, height)
-    
-    return {
-      width,
-      height
-    };
+  //console.log(width, height)
+
+  return {
+    width,
+    height,
+  };
 }
-
 
 // const rows = [
 //   { id: 1, lastName: "Snow", firstName: "Jon", age: 35 },
@@ -25,16 +24,18 @@ function getWindowDimensions() {
 //   { id: 9, lastName: "Roxie", firstName: "Harvey", age: 65 },
 // ];
 
-
-export default function DataTable({columns, rows}) {
-  const [selectedRows, setSelectedRows] = React.useState([]);
-  
-  const screen_width = getWindowDimensions().width
+export default function DataTable({
+  columns,
+  rows,
+  selectedRows,
+  setSelectedRows,
+}) {
+  const screen_width = getWindowDimensions().width;
 
   columns.map((column) => {
-      column.width = (screen_width / columns.length) * 0.9
-      console.log(column)
-  })
+    column.width = (screen_width / columns.length) * 0.9;
+    console.log(column);
+  });
 
   return (
     <div style={{ height: 400, width: "100%" }}>
