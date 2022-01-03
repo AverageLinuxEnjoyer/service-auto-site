@@ -26,6 +26,105 @@ export default function App() {
     window.location.reload();
   };
 
+  const handleUpdate = async () => {
+    let isCar = window.location.pathname.includes("cars");
+    let isTransaction = window.location.pathname.includes("transactions");
+    let isCard = window.location.pathname.includes("cards");
+
+    if (isCar) {
+      const car = selectedRows[0];
+
+      let model = prompt("Enter model", car.model);
+      let acquisition_date = prompt(
+        "Enter acquisition_date",
+        car.acquisition_date
+      );
+      let kilometers = prompt("Enter kilometers", car.kilometers);
+      let warranty = prompt("Enter warranty", car.warranty);
+      const response = await fetch(
+        `https://django-car-service-api.herokuapp.com/car/update/${car.id}/`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model,
+            acquisition_date,
+            kilometers,
+            warranty: warranty === "true",
+          }),
+        }
+      );
+      const data = await response.json();
+
+      alert("Car updated");
+    } else if (isTransaction) {
+      const transaction = selectedRows[0];
+
+      let car = prompt("Enter car", transaction.car);
+      let card = prompt("Enter card", transaction.card);
+      let components_price = prompt(
+        "Enter components_price",
+        transaction.components_price
+      );
+      let datetime = prompt("Enter datetime", transaction.datetime);
+      let workmanship = prompt("Enter workmanship", transaction.workmanship);
+      const response = await fetch(
+        `https://django-car-service-api.herokuapp.com/transaction/update/${transaction.id}/`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            car,
+            card,
+            components_price,
+            workmanship,
+            datetime: new Date(String(datetime)).toISOString(),
+          }),
+        }
+      );
+      const data = await response.json();
+      console.log(data);
+      alert("Transacion updated");
+    } else if (isCard) {
+      const card = selectedRows[0];
+
+      let first_name = prompt("Enter first_name", card.first_name);
+      let last_name = prompt("Enter last_name", card.last_name);
+      let cnp = prompt("Enter cnp", card.cnp);
+      let birthday = prompt("Enter birthday", card.birthday);
+      let registration_date = prompt(
+        "Enter registration_date",
+        card.registration_date
+      );
+
+      const response = await fetch(
+        "https://django-car-service-api.herokuapp.com/card/update/" +
+          card.id +
+          "/",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            first_name,
+            last_name,
+            cnp,
+            birthday,
+            registration_date,
+          }),
+        }
+      );
+      const data = await response.json();
+      alert("Card upated");
+    }
+    window.location.reload();
+  };
+
   const handleCreate = async () => {
     let isCar = window.location.pathname.includes("cars");
     let isTransaction = window.location.pathname.includes("transactions");
@@ -45,7 +144,7 @@ export default function App() {
           },
           body: JSON.stringify({
             model,
-            acquisition_date: new Date(String(acquisition_date)).toISOString(),
+            acquisition_date,
             kilometers,
             warranty: warranty === "true",
           }),
@@ -247,6 +346,7 @@ export default function App() {
         handleCreate={handleCreate}
         handleDeleteTransaction={handleDeleteTransaction}
         handleBetweenSums={handleBetweenSums}
+        handleUpdate={handleUpdate}
       />
       <Routes>
         <Route

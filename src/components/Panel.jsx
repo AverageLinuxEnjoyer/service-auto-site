@@ -16,6 +16,7 @@ function Panel({
   handleCreateRandom,
   handleBetweenSums,
   handleDeleteTransaction,
+  handleUpdate,
   handleCreate,
 }) {
   return (
@@ -27,7 +28,11 @@ function Panel({
       >
         Create
       </Button>
-      <Button variant="contained" startIcon={<EditIcon />}>
+      <Button
+        onClick={handleUpdate}
+        variant="contained"
+        startIcon={<EditIcon />}
+      >
         Edit
       </Button>
       <Button
