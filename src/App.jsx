@@ -20,7 +20,7 @@ export default function App() {
       let kilometers = prompt("Enter kilometers");
       let warranty = prompt("Enter warranty");
       const response = await fetch(
-        "https://django-car-service-api.herokuapp.com/car/create",
+        "https://django-car-service-api.herokuapp.com/car/create/",
         {
           method: "POST",
           headers: {
@@ -44,7 +44,7 @@ export default function App() {
       let datetime = prompt("Enter datetime");
       let workmanship = prompt("Enter workmanship");
       const response = await fetch(
-        "https://django-car-service-api.herokuapp.com/transaction/create",
+        "https://django-car-service-api.herokuapp.com/transaction/create/",
         {
           method: "POST",
           headers: {
@@ -70,7 +70,7 @@ export default function App() {
       let registration_date = prompt("Enter registration_date");
 
       const response = await fetch(
-        "https://django-car-service-api.herokuapp.com/card/create",
+        "https://django-car-service-api.herokuapp.com/card/create/",
         {
           method: "POST",
           headers: {
