@@ -15,6 +15,7 @@ function Panel({
   handleRenew,
   handleCreateRandom,
   handleBetweenSums,
+  handleDeleteTransaction,
   handleCreate,
 }) {
   return (
@@ -57,7 +58,11 @@ function Panel({
       >
         Transaction list between sums
       </Button>
-      <Button variant="contained" startIcon={<DeleteIcon />}>
+      <Button
+        onClick={handleDeleteTransaction}
+        variant="contained"
+        startIcon={<DeleteIcon />}
+      >
         Delete transactions between dates
       </Button>
     </Stack>

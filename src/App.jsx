@@ -9,6 +9,23 @@ import Transactions from "./pages/Transactions.jsx";
 export default function App() {
   const [selectedRows, setSelectedRows] = React.useState([]);
 
+  const handleDeleteTransaction = async () => {
+    const firstDate = prompt("Enter first date");
+    const secondDate = prompt("Enter second");
+
+    const response = await fetch(
+      `https://django-car-service-api.herokuapp.com/transaction/delete/${firstDate}/${secondDate}/`,
+      {
+        method: "DELETE",
+      }
+    );
+    const obj = await response.json();
+
+    alert("Transactions deleted");
+
+    window.location.reload();
+  };
+
   const handleCreate = async () => {
     let isCar = window.location.pathname.includes("cars");
     let isTransaction = window.location.pathname.includes("transactions");
@@ -28,7 +45,7 @@ export default function App() {
           },
           body: JSON.stringify({
             model,
-            acquisition_date: acquisition_date.toISOString(),
+            acquisition_date: new Date(String(acquisition_date)).toISOString(),
             kilometers,
             warranty: warranty === "true",
           }),
@@ -55,7 +72,7 @@ export default function App() {
             card,
             components_price,
             workmanship,
-            datetime: datetime.toISOString(),
+            datetime: new Date(String(datetime)).toISOString(),
           }),
         }
       );
@@ -88,6 +105,7 @@ export default function App() {
       const data = await response.json();
       alert("Card created");
     }
+    window.location.reload();
   };
 
   const handleUndo = async () => {
@@ -97,6 +115,7 @@ export default function App() {
         method: "POST",
       }
     );
+    window.location.reload();
   };
 
   const handleRedo = async () => {
@@ -106,6 +125,7 @@ export default function App() {
         method: "POST",
       }
     );
+    window.location.reload();
   };
 
   const handleRenew = async () => {
@@ -116,6 +136,7 @@ export default function App() {
       }
     );
     const data = await response.json();
+    window.location.reload();
   };
 
   const handleBetweenSums = async () => {
@@ -131,6 +152,8 @@ export default function App() {
     const data = await response.json();
 
     alert(JSON.stringify(data, null, 4));
+
+    window.location.reload();
   };
 
   const handleCreateRandom = async () => {
@@ -164,6 +187,8 @@ export default function App() {
     }
 
     alert(`Created ${times} items`);
+
+    window.location.reload();
   };
 
   const handleDelete = async () => {
@@ -199,6 +224,8 @@ export default function App() {
       });
     }
 
+    window.location.reload();
+
     // const response = await fetch(
     //   "https://django-car-service-api.herokuapp.com/card/delete"
     // );
@@ -218,6 +245,7 @@ export default function App() {
         handleCreateRandom={handleCreateRandom}
         handleRenew={handleRenew}
         handleCreate={handleCreate}
+        handleDeleteTransaction={handleDeleteTransaction}
         handleBetweenSums={handleBetweenSums}
       />
       <Routes>
