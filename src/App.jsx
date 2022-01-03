@@ -1,14 +1,94 @@
 import React from "react";
 import Navbar from "./components/Navbar.jsx";
 import Panel from "./components/Panel.jsx";
-import { Routes, Route, Link, BrowserRouter as Router } from "react-router-dom";
+import { Routes, Route, BrowserRouter as Router } from "react-router-dom";
 import Cards from "./pages/Cards.jsx";
 import Cars from "./pages/Cars.jsx";
 import Transactions from "./pages/Transactions.jsx";
-import { DICK } from "./dick/insideDick/dick.js";
 
 export default function App() {
   const [selectedRows, setSelectedRows] = React.useState([]);
+
+  const handleCreate = async () => {
+    let isCar = window.location.pathname.includes("cars");
+    let isTransaction = window.location.pathname.includes("transactions");
+    let isCard = window.location.pathname.includes("cards");
+
+    if (isCar) {
+      let model = prompt("Enter model");
+      let acquisition_date = prompt("Enter acquisition_date");
+      let kilometers = prompt("Enter kilometers");
+      let warranty = prompt("Enter warranty");
+      const response = await fetch(
+        "https://django-car-service-api.herokuapp.com/car/create",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model,
+            acquisition_date: acquisition_date.toISOString(),
+            kilometers,
+            warranty: warranty === "true",
+          }),
+        }
+      );
+      const data = await response.json();
+
+      alert("Car created");
+    } else if (isTransaction) {
+      let car = prompt("Enter car");
+      let card = prompt("Enter card");
+      let components_price = prompt("Enter components_price");
+      let datetime = prompt("Enter datetime");
+      let workmanship = prompt("Enter workmanship");
+      const response = await fetch(
+        "https://django-car-service-api.herokuapp.com/transaction/create",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            car,
+            card,
+            components_price,
+            workmanship,
+            datetime: datetime.toISOString(),
+          }),
+        }
+      );
+      const data = await response.json();
+      console.log(data);
+      alert("Transacion created");
+    } else if (isCard) {
+      let first_name = prompt("Enter first_name");
+      let last_name = prompt("Enter last_name");
+      let cnp = prompt("Enter cnp");
+      let birthday = prompt("Enter birthday");
+      let registration_date = prompt("Enter registration_date");
+
+      const response = await fetch(
+        "https://django-car-service-api.herokuapp.com/card/create",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            first_name,
+            last_name,
+            cnp,
+            birthday,
+            registration_date,
+          }),
+        }
+      );
+      const data = await response.json();
+      alert("Card created");
+    }
+  };
 
   const handleUndo = async () => {
     const response = await fetch(
@@ -58,7 +138,7 @@ export default function App() {
     let isTransaction = window.location.pathname.includes("transactions");
     let isCard = window.location.pathname.includes("cards");
 
-    let times = prompt(`How many ${DICK} do you want to create?`);
+    let times = prompt(`How many items do you want to create?`);
 
     if (isCar) {
       const response = await fetch(
@@ -83,7 +163,7 @@ export default function App() {
       );
     }
 
-    alert(`Created ${times} ${DICK}`);
+    alert(`Created ${times} items`);
   };
 
   const handleDelete = async () => {
@@ -137,6 +217,7 @@ export default function App() {
         handleDelete={handleDelete}
         handleCreateRandom={handleCreateRandom}
         handleRenew={handleRenew}
+        handleCreate={handleCreate}
         handleBetweenSums={handleBetweenSums}
       />
       <Routes>
