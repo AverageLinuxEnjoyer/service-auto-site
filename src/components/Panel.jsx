@@ -19,7 +19,26 @@ function Panel({
   handleUpdate,
   handleCreate,
   selectedRows,
+  setIsDeleteTransactionBetweenDatesModalOpen,
 }) {
+  const [currentPage, setCurrentPage] = React.useState("/");
+
+  React.useEffect(() => {
+    switch (window.location.pathname) {
+      case "/cars":
+        setCurrentPage("cars");
+        break;
+      case "/transactions":
+        setCurrentPage("transactions");
+        break;
+      case "/cards":
+        setCurrentPage("cards");
+        break;
+      default:
+        setCurrentPage("/");
+    }
+  });
+
   return (
     <Stack direction="row" spacing={2} className="PanelButtons">
       <Button
@@ -29,26 +48,28 @@ function Panel({
       >
         Create
       </Button>
-      {selectedRows.length == 1
-        ? <Button
+      {selectedRows.length == 1 ? (
+        <Button
           onClick={handleUpdate}
           variant="contained"
           startIcon={<EditIcon />}
         >
           Edit
         </Button>
-        : ''
-      }
-      {selectedRows.length >= 1
-        ? <Button
+      ) : (
+        ""
+      )}
+      {selectedRows.length >= 1 ? (
+        <Button
           onClick={handleDelete}
           variant="contained"
           startIcon={<DeleteIcon />}
         >
           Delete
         </Button>
-        : ''
-      }
+      ) : (
+        ""
+      )}
 
       <Button
         onClick={handleCreateRandom}
@@ -57,27 +78,35 @@ function Panel({
       >
         Create Random
       </Button>
-      <Button
-        onClick={handleRenew}
-        variant="contained"
-        startIcon={<PublishedWithChangesIcon />}
-      >
-        Renew Cars Warranty
-      </Button>
-      <Button
-        onClick={handleBetweenSums}
-        variant="contained"
-        startIcon={<ListIcon />}
-      >
-        Transaction list between sums
-      </Button>
-      <Button
-        onClick={handleDeleteTransaction}
-        variant="contained"
-        startIcon={<DeleteIcon />}
-      >
-        Delete transactions between dates
-      </Button>
+      {currentPage === "cars" && (
+        <Button
+          onClick={handleRenew}
+          variant="contained"
+          startIcon={<PublishedWithChangesIcon />}
+        >
+          Renew Cars Warranty
+        </Button>
+      )}
+
+      {currentPage === "transactions" && (
+        <>
+          {" "}
+          <Button
+            onClick={handleBetweenSums}
+            variant="contained"
+            startIcon={<ListIcon />}
+          >
+            Transaction list between sums
+          </Button>
+          <Button
+            onClick={() => setIsDeleteTransactionBetweenDatesModalOpen(true)}
+            variant="contained"
+            startIcon={<DeleteIcon />}
+          >
+            Delete transactions between dates
+          </Button>
+        </>
+      )}
     </Stack>
   );
 }
