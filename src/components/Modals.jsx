@@ -185,7 +185,7 @@ export function TransactionBetweenSumsModal({
         <Fade in={isModalOpened}>
           <Box sx={style.modalBox}>
             <DialogTitle style={style.modalTitle} sx={{ m: 0, p: 2 }}>
-              How many items do you want to create?
+              Transaction list between sums
               {handleClose ? (
                 <IconButton
                   aria-label="close"
@@ -219,7 +219,7 @@ export function TransactionBetweenSumsModal({
                       marginLeft: 0,
                     }}
                     id="outlined-number"
-                    label="Number of items"
+                    label="Lower bound"
                     type="number"
                     value={firstSum}
                     onChange={handleFirstSum}
@@ -229,7 +229,7 @@ export function TransactionBetweenSumsModal({
                   <TextField
                     style={{ width: "inherit", marginLeft: 0 }}
                     id="outlined-number"
-                    label="Number of items"
+                    label="Upper bound"
                     type="number"
                     value={secondSum}
                     onChange={handleSecondSum}
@@ -292,7 +292,7 @@ export function DeleteTransactionBetweenDatesModal({
         <Fade in={isModalOpened}>
           <Box sx={style.modalBox}>
             <DialogTitle style={style.modalTitle} sx={{ m: 0, p: 2 }}>
-              How many items do you want to create?
+              Delete transactions between dates
               {handleClose ? (
                 <IconButton
                   aria-label="close"
@@ -321,7 +321,7 @@ export function DeleteTransactionBetweenDatesModal({
                 <div className="col-sm-6">
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <DatePicker
-                      label="Registration Date"
+                      label="Start date"
                       value={firstDate}
                       onChange={handleFirstDate}
                       renderInput={(params) => <TextField {...params} />}
@@ -331,7 +331,7 @@ export function DeleteTransactionBetweenDatesModal({
                 <div className="col-sm-6">
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <DatePicker
-                      label="Registration Date"
+                      label="End date"
                       value={secondDate}
                       onChange={handleSecondDate}
                       renderInput={(params) => <TextField {...params} />}
