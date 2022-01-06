@@ -17,6 +17,7 @@ function Panel({
   handleBetweenSums,
   handleDeleteTransaction,
   setIsCreateTransactionBetweenSumsModalOpen,
+  setTransactionBetweenSums,
   handleUpdate,
   handleCreate,
   selectedRows,

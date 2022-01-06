@@ -413,6 +413,7 @@ export default function App() {
           setSelectedRows={setSelectedRows}
           setSearchResultsForCars={setSearchResultsForCars}
           setSearchResultsForCards={setSearchResultsForCards}
+          setTransactionBetweenSums={setTransactionBetweenSums}
         />
         <Panel
           handleDelete={handleDelete}

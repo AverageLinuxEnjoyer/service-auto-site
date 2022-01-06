@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useMemo, useEffect } from 'react';
+import { useMemo, useEffect } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -15,7 +15,7 @@ import { styled, alpha } from "@mui/material/styles";
 import InputBase from "@mui/material/InputBase";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import debounce from 'lodash.debounce';
+import debounce from "lodash.debounce";
 
 const pages = ["cars", "cards", "transactions"];
 
@@ -61,14 +61,20 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-
-const ResponsiveAppBar = ({ setSelectedRows, handleUndo, handleRedo, setSearchResultsForCars, setSearchResultsForCards }) => {
+const ResponsiveAppBar = ({
+  setSelectedRows,
+  handleUndo,
+  handleRedo,
+  setSearchResultsForCars,
+  setSearchResultsForCards,
+  setTransactionBetweenSums,
+}) => {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [searchQuery, setSearchQuery] = React.useState('');
+  const [searchQuery, setSearchQuery] = React.useState("");
   const navigate = useNavigate();
 
   const handleSearch = async (event) => {
-    if(event){
+    if (event) {
       let newSearchQuery = event.target.value;
       const response = await fetch(
         `https://django-car-service-api.herokuapp.com/search/?text=${newSearchQuery}`,
@@ -86,7 +92,7 @@ const ResponsiveAppBar = ({ setSelectedRows, handleUndo, handleRedo, setSearchRe
 
       navigate("/search");
     }
-  }
+  };
 
   const debouncedChangeHandler = useMemo(() => {
     return debounce(handleSearch, 300);
@@ -124,20 +130,40 @@ const ResponsiveAppBar = ({ setSelectedRows, handleUndo, handleRedo, setSearchRe
             Service Auto
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {pages.map((page, i) => (
-              <Button
-                key={page}
-                onClick={() => setSelectedRows([])}
-                sx={{ my: 2, color: "white", display: "block" }}
+            <Button
+              onClick={() => setSelectedRows([])}
+              sx={{ my: 2, color: "white", display: "block" }}
+            >
+              <Link
+                style={{ color: "white", textDecoration: "none" }}
+                to={`/cars`}
               >
-                <Link
-                  style={{ color: "white", textDecoration: "none" }}
-                  to={page}
-                >
-                  {page}
-                </Link>
-              </Button>
-            ))}
+                Cars
+              </Link>
+            </Button>
+            <Button
+              onClick={() => setSelectedRows([])}
+              sx={{ my: 2, color: "white", display: "block" }}
+            >
+              <Link
+                style={{ color: "white", textDecoration: "none" }}
+                to={`/cards`}
+              >
+                Cards
+              </Link>
+            </Button>
+            <Button
+              onClick={() => setSelectedRows([])}
+              sx={{ my: 2, color: "white", display: "block" }}
+            >
+              <Link
+                style={{ color: "white", textDecoration: "none" }}
+                onClick={() => setTransactionBetweenSums([])}
+                to={`/transactions`}
+              >
+                Transactions
+              </Link>
+            </Button>
           </Box>
 
           <MenuItem key="Undo" onClick={handleUndo}>
