@@ -16,6 +16,7 @@ function Panel({
   handleCreateRandom,
   handleBetweenSums,
   handleDeleteTransaction,
+  setIsCreateTransactionBetweenSumsModalOpen,
   handleUpdate,
   handleCreate,
   selectedRows,
@@ -92,7 +93,7 @@ function Panel({
         <>
           {" "}
           <Button
-            onClick={handleBetweenSums}
+            onClick={() => setIsCreateTransactionBetweenSumsModalOpen(true)}
             variant="contained"
             startIcon={<ListIcon />}
           >

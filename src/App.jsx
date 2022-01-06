@@ -30,6 +30,9 @@ export default function App() {
     createTransactionBetweenSumsModalIsOpen,
     setIsCreateTransactionBetweenSumsModalOpen,
   ] = React.useState(false);
+  const [transactionsBetweenSums, setTransactionBetweenSums] = React.useState(
+    []
+  );
 
   const [
     deleteTransactionBetweenDatesModalIsOpen,
@@ -303,11 +306,6 @@ export default function App() {
     let isTransaction = window.location.pathname.includes("transactions");
     let isCard = window.location.pathname.includes("cards");
 
-    if (isCar || isTransaction || isCard) {
-      // Open a modal only if you're on one of these pages
-      setIsCreateTransactionBetweenSumsModalOpen(true);
-    }
-
     const response = await fetch(
       `https://django-car-service-api.herokuapp.com/transaction/list/${firstSum}/${secondSum}`,
       {
@@ -316,9 +314,11 @@ export default function App() {
     );
     const data = await response.json();
 
-    alert(JSON.stringify(data, null, 4));
+    console.log(JSON.stringify(data, null, 4));
 
-    window.location.reload();
+    setTransactionBetweenSums(data);
+
+    // window.location.reload();
   };
 
   const handleCreateRandom = async () => {
@@ -426,6 +426,9 @@ export default function App() {
           setIsDeleteTransactionBetweenDatesModalOpen={
             setIsDeleteTransactionBetweenDatesModalOpen
           }
+          setIsCreateTransactionBetweenSumsModalOpen={
+            setIsCreateTransactionBetweenSumsModalOpen
+          }
         />
         <Routes>
           <Route
@@ -454,6 +457,7 @@ export default function App() {
               <Transactions
                 selectedRows={selectedRows}
                 setSelectedRows={setSelectedRows}
+                transactionsBetweenSums={transactionsBetweenSums}
               />
             }
           />

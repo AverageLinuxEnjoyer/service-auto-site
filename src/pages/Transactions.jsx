@@ -1,7 +1,11 @@
 import React from "react";
 import Table from "../components/Table.jsx";
 
-export default function Transactions({ selectedRows, setSelectedRows }) {
+export default function Transactions({
+  selectedRows,
+  setSelectedRows,
+  transactionsBetweenSums,
+}) {
   const [transactions, setTransactions] = React.useState([]);
 
   React.useEffect(() => {
@@ -29,7 +33,9 @@ export default function Transactions({ selectedRows, setSelectedRows }) {
     <Table
       selectedRows={selectedRows}
       setSelectedRows={setSelectedRows}
-      rows={transactions}
+      rows={
+        transactionsBetweenSums.length ? transactionsBetweenSums : transactions
+      }
       columns={columns}
     />
   );
