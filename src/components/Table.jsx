@@ -38,9 +38,6 @@ export default function DataTable({
           setSelectedRows(selectedRows);
         }}
       />
-      <pre style={{ fontSize: 10 }}>
-        {JSON.stringify(selectedRows, null, 4)}
-      </pre>
     </div>
   );
 }
