@@ -1,13 +1,50 @@
 import React from "react";
+const { useRef } = React;
 import Navbar from "./components/Navbar.jsx";
 import Panel from "./components/Panel.jsx";
+import CreateServiceModal from "./components/CreateServiceModal.jsx";
+import EditServiceModal from "./components/EditServiceModal.jsx";
+import { CreateRandomModal, TransactionBetweenSumsModal } from "./components/Modals.jsx";
 import { Routes, Route, BrowserRouter as Router } from "react-router-dom";
 import Cards from "./pages/Cards.jsx";
 import Cars from "./pages/Cars.jsx";
 import Transactions from "./pages/Transactions.jsx";
+import { TypeOfService } from './plugins/enums.js'
+import { store } from 'react-notifications-component';
 
 export default function App() {
+  const moment = require('moment');
   const [selectedRows, setSelectedRows] = React.useState([]);
+  const [searchResultsForCars, setSearchResultsForCars] = React.useState([]);
+  const [searchResultsForCards, setSearchResultsForCards] = React.useState([]);
+  const [serviceType, setServiceType] = React.useState('');
+  const [createModalIsOpen, setIsCreateModalOpen] = React.useState(false);
+  const [editModalIsOpen, setIsEditModalOpen] = React.useState(false);
+  const [createRandomModalIsOpen, setIsCreateRandomModalOpen] = React.useState(false);
+
+  function openCreationModal() {
+    setIsCreateModalOpen(true);
+  }
+
+  function handleCloseCreationModal() {
+    setIsCreateModalOpen(false);
+  }
+
+  function openEditModal() {
+    setIsEditModalOpen(true);
+  }
+
+  function handleCloseEditModal() {
+    setIsEditModalOpen(false);
+  }
+
+  function openCreateRandomModal() {
+    setIsCreateRandomModalOpen(true);
+  }
+
+  function handleCloseCreateRandomModal() {
+    setIsCreateRandomModalOpen(false);
+  }
 
   const handleDeleteTransaction = async () => {
     const firstDate = prompt("Enter first date");
@@ -31,98 +68,17 @@ export default function App() {
     let isTransaction = window.location.pathname.includes("transactions");
     let isCard = window.location.pathname.includes("cards");
 
-    if (isCar) {
-      const car = selectedRows[0];
-
-      let model = prompt("Enter model", car.model);
-      let acquisition_date = prompt(
-        "Enter acquisition_date",
-        car.acquisition_date
-      );
-      let kilometers = prompt("Enter kilometers", car.kilometers);
-      let warranty = prompt("Enter warranty", car.warranty);
-      const response = await fetch(
-        `https://django-car-service-api.herokuapp.com/car/update/${car.id}/`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            model,
-            acquisition_date,
-            kilometers,
-            warranty: warranty === "true",
-          }),
-        }
-      );
-      const data = await response.json();
-
-      alert("Car updated");
-    } else if (isTransaction) {
-      const transaction = selectedRows[0];
-
-      let car = prompt("Enter car", transaction.car);
-      let card = prompt("Enter card", transaction.card);
-      let components_price = prompt(
-        "Enter components_price",
-        transaction.components_price
-      );
-      let datetime = prompt("Enter datetime", transaction.datetime);
-      let workmanship = prompt("Enter workmanship", transaction.workmanship);
-      const response = await fetch(
-        `https://django-car-service-api.herokuapp.com/transaction/update/${transaction.id}/`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            car,
-            card,
-            components_price,
-            workmanship,
-            datetime: new Date(String(datetime)).toISOString(),
-          }),
-        }
-      );
-      const data = await response.json();
-      console.log(data);
-      alert("Transacion updated");
-    } else if (isCard) {
-      const card = selectedRows[0];
-
-      let first_name = prompt("Enter first_name", card.first_name);
-      let last_name = prompt("Enter last_name", card.last_name);
-      let cnp = prompt("Enter cnp", card.cnp);
-      let birthday = prompt("Enter birthday", card.birthday);
-      let registration_date = prompt(
-        "Enter registration_date",
-        card.registration_date
-      );
-
-      const response = await fetch(
-        "https://django-car-service-api.herokuapp.com/card/update/" +
-          card.id +
-          "/",
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            first_name,
-            last_name,
-            cnp,
-            birthday,
-            registration_date,
-          }),
-        }
-      );
-      const data = await response.json();
-      alert("Card upated");
+    if (isCar || isTransaction || isCard) { // Open a modal only if you're on one of these pages 
+      openEditModal();
     }
-    window.location.reload();
+
+    if (isCar) {
+      setServiceType(TypeOfService.Cars)
+    } else if (isTransaction) {
+      setServiceType(TypeOfService.Transactions)
+    } else if (isCard) {
+      setServiceType(TypeOfService.Cards)
+    }
   };
 
   const handleCreate = async () => {
@@ -130,11 +86,21 @@ export default function App() {
     let isTransaction = window.location.pathname.includes("transactions");
     let isCard = window.location.pathname.includes("cards");
 
+    if (isCar || isTransaction || isCard) { // Open a modal only if you're on one of these pages 
+      openCreationModal();
+    }
+
     if (isCar) {
-      let model = prompt("Enter model");
-      let acquisition_date = prompt("Enter acquisition_date");
-      let kilometers = prompt("Enter kilometers");
-      let warranty = prompt("Enter warranty");
+      setServiceType(TypeOfService.Cars)
+    } else if (isTransaction) {
+      setServiceType(TypeOfService.Transactions)
+    } else if (isCard) {
+      setServiceType(TypeOfService.Cards)
+    }
+  };
+
+  const createNewService = async (event, model) => {
+    if (serviceType == TypeOfService.Cars) {
       const response = await fetch(
         "https://django-car-service-api.herokuapp.com/car/create/",
         {
@@ -143,48 +109,16 @@ export default function App() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            model,
-            acquisition_date,
-            kilometers,
-            warranty: warranty === "true",
+            model: model.model,
+            acquisition_date: moment(model.acquisitionDate).format('YYYY-MM-DD'),
+            kilometers: model.kilometers,
+            warranty: model.isWarrantyChecked,
           }),
         }
       );
       const data = await response.json();
-
-      alert("Car created");
-    } else if (isTransaction) {
-      let car = prompt("Enter car");
-      let card = prompt("Enter card");
-      let components_price = prompt("Enter components_price");
-      let datetime = prompt("Enter datetime");
-      let workmanship = prompt("Enter workmanship");
-      const response = await fetch(
-        "https://django-car-service-api.herokuapp.com/transaction/create/",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            car,
-            card,
-            components_price,
-            workmanship,
-            datetime: new Date(String(datetime)).toISOString(),
-          }),
-        }
-      );
-      const data = await response.json();
-      console.log(data);
-      alert("Transacion created");
-    } else if (isCard) {
-      let first_name = prompt("Enter first_name");
-      let last_name = prompt("Enter last_name");
-      let cnp = prompt("Enter cnp");
-      let birthday = prompt("Enter birthday");
-      let registration_date = prompt("Enter registration_date");
-
+      successMessageForCreation('car');
+    } else if (serviceType == TypeOfService.Cards) {
       const response = await fetch(
         "https://django-car-service-api.herokuapp.com/card/create/",
         {
@@ -193,19 +127,120 @@ export default function App() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            first_name,
-            last_name,
-            cnp,
-            birthday,
-            registration_date,
+            first_name: model.firstName,
+            last_name: model.lastName,
+            cnp: model.cnp,
+            birthday: moment(model.birthday).format('YYYY-MM-DD'),
+            registration_date: moment(model.registrationDate).format('YYYY-MM-DD'),
           }),
         }
       );
       const data = await response.json();
-      alert("Card created");
+      successMessageForCreation('card');
+    } else {
+      const response = await fetch(
+        "https://django-car-service-api.herokuapp.com/transaction/create/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            car: model.carId,
+            card: model.cardId,
+            components_price: model.componentsPrice,
+            workmanship: model.workmanship,
+            datetime: moment(model.dateTime).format('YYYY-MM-DD'),
+          }),
+        }
+      );
+      const data = await response.json();
+      successMessageForCreation('transaction');
+    }
+  }
+
+  const successMessageForCreation = (typeCreated) => {
+    store.addNotification({
+      title: "Congratulations!",
+      message: `Your ${typeCreated} entry has been created successfully.`,
+      type: "success",
+      insert: "top",
+      container: "top-right",
+      animationIn: ["animate__animated", "animate__fadeIn"],
+      animationOut: ["animate__animated", "animate__fadeOut"],
+      dismiss: {
+        duration: 1000,
+        onScreen: true
+      },
+      onRemoval: () => {
+        window.location.reload();
+      }
+    });
+  }
+
+  const editService = async (event, model) => {
+    if (serviceType == TypeOfService.Cars) {
+      const response = await fetch(
+        `https://django-car-service-api.herokuapp.com/car/update/${selectedRows[0].id}/`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: model.model,
+            acquisition_date: moment(model.acquisitionDate).format('YYYY-MM-DD'),
+            kilometers: model.kilometers,
+            warranty: model.isWarrantyChecked,
+          }),
+        }
+      );
+      const data = await response.json();
+
+      alert("Car updated");
+    } else if (serviceType == TypeOfService.Cards) {
+      const response = await fetch(
+        "https://django-car-service-api.herokuapp.com/card/update/" +
+        selectedRows[0].id +
+        "/",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            first_name: model.firstName,
+            last_name: model.lastName,
+            cnp: model.cnp,
+            birthday: moment(model.birthday).format('YYYY-MM-DD'),
+            registration_date: moment(model.registrationDate).format('YYYY-MM-DD'),
+          }),
+        }
+      );
+      const data = await response.json();
+      alert("Card upated");
+    } else {
+      const response = await fetch(
+        `https://django-car-service-api.herokuapp.com/transaction/update/${selectedRows[0].id}/`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            car: model.carId,
+            card: model.cardId,
+            components_price: model.componentsPrice,
+            workmanship: model.workmanship,
+            datetime: moment(model.dateTime).format('YYYY-MM-DD'),
+          }),
+        }
+      );
+      const data = await response.json();
+      alert("Transaction updated");
     }
     window.location.reload();
-  };
+  }
 
   const handleUndo = async () => {
     const response = await fetch(
@@ -260,35 +295,47 @@ export default function App() {
     let isTransaction = window.location.pathname.includes("transactions");
     let isCard = window.location.pathname.includes("cards");
 
-    let times = prompt(`How many items do you want to create?`);
+    if (isCar || isTransaction || isCard) { // Open a modal only if you're on one of these pages 
+      openCreateRandomModal();
+    }
 
     if (isCar) {
-      const response = await fetch(
-        `https://django-car-service-api.herokuapp.com/car/random/${times}/`,
-        {
-          method: "POST",
-        }
-      );
+      setServiceType(TypeOfService.Cars)
     } else if (isCard) {
+      setServiceType(TypeOfService.Cards)
+    } else if (isTransaction) {
+      setServiceType(TypeOfService.Transactions)
+    }
+  };
+
+  const createRandomService = async (event, numberOfItems) => {
+    if (serviceType == TypeOfService.Cars) {
       const response = await fetch(
-        `https://django-car-service-api.herokuapp.com/card/random/${times}/`,
+        `https://django-car-service-api.herokuapp.com/car/random/${numberOfItems}/`,
         {
           method: "POST",
         }
       );
-    } else if (isTransaction) {
+    } else if (serviceType == TypeOfService.Cards) {
       const response = await fetch(
-        `https://django-car-service-api.herokuapp.com/transaction/random/${times}/`,
+        `https://django-car-service-api.herokuapp.com/card/random/${numberOfItems}/`,
+        {
+          method: "POST",
+        }
+      );
+    } else if (serviceType == TypeOfService.Transactions) {
+      const response = await fetch(
+        `https://django-car-service-api.herokuapp.com/transaction/random/${numberOfItems}/`,
         {
           method: "POST",
         }
       );
     }
 
-    alert(`Created ${times} items`);
+    alert(`Created ${numberOfItems} items`);
 
     window.location.reload();
-  };
+  }
 
   const handleDelete = async () => {
     let isCar = window.location.pathname.includes("cars");
@@ -323,59 +370,94 @@ export default function App() {
     setTimeout(() => {
       window.location.reload();
     }, 500);
-
-    // const response = await fetch(
-    //   "https://django-car-service-api.herokuapp.com/card/delete"
-    // );
-    // const data = await response.json();
-    // console.log(data);
   };
 
   return (
-    <Router>
-      <Navbar
-        handleUndo={handleUndo}
-        handleRedo={handleRedo}
-        setSelectedRows={setSelectedRows}
+    <div>
+      <Router>
+        <Navbar
+          handleUndo={handleUndo}
+          handleRedo={handleRedo}
+          setSelectedRows={setSelectedRows}
+          setSearchResultsForCars={setSearchResultsForCars}
+          setSearchResultsForCards={setSearchResultsForCards}
+        />
+        <Panel
+          handleDelete={handleDelete}
+          handleCreateRandom={handleCreateRandom}
+          handleRenew={handleRenew}
+          handleCreate={handleCreate}
+          handleDeleteTransaction={handleDeleteTransaction}
+          handleBetweenSums={handleBetweenSums}
+          handleUpdate={handleUpdate}
+          selectedRows={selectedRows}
+        />
+        <Routes>
+          <Route
+            path="cars"
+            element={
+              <Cars
+                selectedRows={selectedRows}
+                setSelectedRows={setSelectedRows}
+                searchResultsForCars={searchResultsForCars}
+              />
+            }
+          />
+          <Route
+            path="cards"
+            element={
+              <Cards
+                selectedRows={selectedRows}
+                setSelectedRows={setSelectedRows}
+                searchResultsForCards={searchResultsForCards}
+              />
+            }
+          />
+          <Route
+            path="transactions"
+            element={
+              <Transactions
+                selectedRows={selectedRows}
+                setSelectedRows={setSelectedRows}
+              />
+            }
+          />
+          <Route
+            path="search"
+            element={
+              <div>
+                <Cars
+                  selectedRows={selectedRows}
+                  setSelectedRows={setSelectedRows}
+                  searchResultsForCars={searchResultsForCars}
+                />
+                <Cards
+                  selectedRows={selectedRows}
+                  setSelectedRows={setSelectedRows}
+                  searchResultsForCards={searchResultsForCards}
+                />
+              </div>
+            }
+          />
+        </Routes>
+      </Router>
+      <CreateServiceModal
+        isModalOpened={createModalIsOpen}
+        onCloseModal={handleCloseCreationModal}
+        serviceType={serviceType}
+        createNewService={createNewService} />
+      <EditServiceModal
+        isModalOpened={editModalIsOpen}
+        onCloseModal={handleCloseEditModal}
+        serviceType={serviceType}
+        editService={editService}
+        selectedRows={selectedRows}
       />
-      <Panel
-        handleDelete={handleDelete}
-        handleCreateRandom={handleCreateRandom}
-        handleRenew={handleRenew}
-        handleCreate={handleCreate}
-        handleDeleteTransaction={handleDeleteTransaction}
-        handleBetweenSums={handleBetweenSums}
-        handleUpdate={handleUpdate}
-      />
-      <Routes>
-        <Route
-          path="cars"
-          element={
-            <Cars
-              selectedRows={selectedRows}
-              setSelectedRows={setSelectedRows}
-            />
-          }
-        />
-        <Route
-          path="cards"
-          element={
-            <Cards
-              selectedRows={selectedRows}
-              setSelectedRows={setSelectedRows}
-            />
-          }
-        />
-        <Route
-          path="transactions"
-          element={
-            <Transactions
-              selectedRows={selectedRows}
-              setSelectedRows={setSelectedRows}
-            />
-          }
-        />
-      </Routes>
-    </Router>
+      <CreateRandomModal
+        isModalOpened={createRandomModalIsOpen}
+        onCloseModal={handleCloseCreateRandomModal}
+        createRandom={createRandomService} />
+      <TransactionBetweenSumsModal />
+    </div>
   );
 }

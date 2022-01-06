@@ -18,6 +18,7 @@ function Panel({
   handleDeleteTransaction,
   handleUpdate,
   handleCreate,
+  selectedRows,
 }) {
   return (
     <Stack direction="row" spacing={2} className="PanelButtons">
@@ -28,20 +29,27 @@ function Panel({
       >
         Create
       </Button>
-      <Button
-        onClick={handleUpdate}
-        variant="contained"
-        startIcon={<EditIcon />}
-      >
-        Edit
-      </Button>
-      <Button
-        onClick={handleDelete}
-        variant="contained"
-        startIcon={<DeleteIcon />}
-      >
-        Delete
-      </Button>
+      {selectedRows.length == 1
+        ? <Button
+          onClick={handleUpdate}
+          variant="contained"
+          startIcon={<EditIcon />}
+        >
+          Edit
+        </Button>
+        : ''
+      }
+      {selectedRows.length >= 1
+        ? <Button
+          onClick={handleDelete}
+          variant="contained"
+          startIcon={<DeleteIcon />}
+        >
+          Delete
+        </Button>
+        : ''
+      }
+
       <Button
         onClick={handleCreateRandom}
         variant="contained"

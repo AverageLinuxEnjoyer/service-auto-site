@@ -1,19 +1,39 @@
 import React from "react";
+import useDeepCompareEffect from 'use-deep-compare-effect'
 import Table from "../components/Table.jsx";
 
-export default function Cards({ selectedRows, setSelectedRows }) {
+export default function Cards({ selectedRows, setSelectedRows, searchResultsForCards }) {
   const [cards, setCards] = React.useState([]);
 
-  React.useEffect(() => {
+  const listCards = async () => {
     (async () => {
       const response = await fetch(
         "https://django-car-service-api.herokuapp.com/card/list"
       );
       const data = await response.json();
-      console.log(data);
       setCards(data);
     })();
+  }
+
+  React.useEffect(() => {
+    if (searchResultsForCards.length == 0) {
+      listCards();
+    } else {
+      setCards(searchResultsForCards);
+    }
   }, []);
+
+  useDeepCompareEffect( // Gets invoked when you use the search
+    () => {
+      if (searchResultsForCards.length == 0) {
+        listCards();
+      } else {
+        setCards(searchResultsForCards);
+      }
+    },
+    [searchResultsForCards],
+  )
+
 
   if (cards.length === 0) return <p>Loading cards...</p>;
 
@@ -36,6 +56,3 @@ export default function Cards({ selectedRows, setSelectedRows }) {
     />
   );
 }
-
-//
-//

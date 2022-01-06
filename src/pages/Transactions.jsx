@@ -10,7 +10,6 @@ export default function Transactions({ selectedRows, setSelectedRows }) {
         "https://django-car-service-api.herokuapp.com/transaction/list/"
       );
       const data = await response.json();
-      console.log(data);
       setTransactions(data);
     })();
   }, []);
@@ -35,6 +34,3 @@ export default function Transactions({ selectedRows, setSelectedRows }) {
     />
   );
 }
-
-//
-//

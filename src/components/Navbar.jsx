@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useMemo, useEffect } from 'react';
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -12,7 +13,9 @@ import MenuItem from "@mui/material/MenuItem";
 import SearchIcon from "@mui/icons-material/Search";
 import { styled, alpha } from "@mui/material/styles";
 import InputBase from "@mui/material/InputBase";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import debounce from 'lodash.debounce';
 
 const pages = ["cars", "cards", "transactions"];
 
@@ -58,38 +61,46 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-class PageState {
-  static handleCarsMenu = () => {
-    fetch("http://localhost:8000/car/list").then(function (response) {
-      const obj = response.json();
-    });
-  };
 
-  static handleCardsMenu = () => {
-    fetch("http://localhost:8000/card/list").then(function (response) {
-      const obj = response.json();
-    });
-  };
-
-  static handleTransactionsMenu = () => {
-    fetch("http://localhost:8000/transaction/list").then(function (response) {
-      const obj = response.json();
-    });
-  };
-
-  static handleMenus = [
-    PageState.handleCarsMenu,
-    PageState.handleCardsMenu,
-    PageState.handleTransactionsMenu,
-  ];
-}
-
-const ResponsiveAppBar = ({ setSelectedRows, handleUndo, handleRedo }) => {
+const ResponsiveAppBar = ({ setSelectedRows, handleUndo, handleRedo, setSearchResultsForCars, setSearchResultsForCards }) => {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const navigate = useNavigate();
+
+  const handleSearch = async (event) => {
+    if(event){
+      let newSearchQuery = event.target.value;
+      const response = await fetch(
+        `https://django-car-service-api.herokuapp.com/search/?text=${newSearchQuery}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = await response.json();
+
+      setSearchResultsForCars(data.cars);
+      setSearchResultsForCards(data.cards);
+
+      navigate("/search");
+    }
+  }
+
+  const debouncedChangeHandler = useMemo(() => {
+    return debounce(handleSearch, 300);
+  }, []);
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
+
+  useEffect(() => {
+    return () => {
+      debouncedChangeHandler.cancel();
+    };
+  });
 
   return (
     <AppBar position="static">
@@ -117,7 +128,6 @@ const ResponsiveAppBar = ({ setSelectedRows, handleUndo, handleRedo }) => {
               <Button
                 key={page}
                 onClick={() => setSelectedRows([])}
-                // onClick={PageState.handleMenus[i]}
                 sx={{ my: 2, color: "white", display: "block" }}
               >
                 <Link
@@ -145,6 +155,7 @@ const ResponsiveAppBar = ({ setSelectedRows, handleUndo, handleRedo }) => {
             <StyledInputBase
               placeholder="Search…"
               inputProps={{ "aria-label": "search" }}
+              onChange={debouncedChangeHandler}
             />
           </Search>
         </Toolbar>

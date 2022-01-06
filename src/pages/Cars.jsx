@@ -1,19 +1,38 @@
-import React from "react";
+import React, { useEffect } from 'react';
+import useDeepCompareEffect from 'use-deep-compare-effect'
 import Table from "../components/Table.jsx";
 
-export default function Cars({ selectedRows, setSelectedRows }) {
+export default function Cars({ selectedRows, setSelectedRows, searchResultsForCars }) {
   const [cars, setCars] = React.useState([]);
 
-  React.useEffect(() => {
+  const listCars = async () => {
     (async () => {
       const response = await fetch(
         "https://django-car-service-api.herokuapp.com/car/list"
       );
       const data = await response.json();
-      console.log(data);
       setCars(data);
     })();
+  }
+
+  React.useEffect(() => {
+    if (searchResultsForCars.length == 0) {
+      listCars();
+    } else {
+      setCars(searchResultsForCars);
+    }
   }, []);
+
+  useDeepCompareEffect( // Gets invoked when you use the search
+    () => {
+      if (searchResultsForCars.length == 0) {
+        listCars();
+      } else {
+        setCars(searchResultsForCars);
+      }
+    },
+    [searchResultsForCars],
+  )
 
   if (cars.length === 0) return <p>Loading cars...</p>;
 
@@ -35,6 +54,3 @@ export default function Cars({ selectedRows, setSelectedRows }) {
     />
   );
 }
-
-//
-//
